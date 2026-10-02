@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arena Fighter</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #111;
+  color: white;
+  text-align: center;
+}
+
+h1 {
+  margin: 15px 0;
+}
+
+.arena {
+  width: 95%;
+  max-width: 900px;
+  height: 450px;
+  margin: auto;
+  background: linear-gradient(#222, #444);
+  border: 4px solid #777;
+  position: relative;
+  overflow: hidden;
+}
+
+.player {
+  position: absolute;
+  bottom: 40px;
+  width: 70px;
+  height: 100px;
+  border-radius: 15px;
+}
+
+#p1 {
+  left: 70px;
+  background: #2196f3;
+}
+
+#p2 {
+  right: 70px;
+  background: #e53935;
+}
+
+.health-box {
+  width: 90%;
+  max-width: 800px;
+  margin: 15px auto;
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.health {
+  height: 25px;
+  background: #333;
+  border: 2px solid white;
+  flex: 1;
+}
+
+.health-fill {
+  height: 100%;
+  width: 100%;
+  background: #39d353;
+  transition: width 0.3s;
+}
+
+.controls {
+  margin: 20px auto;
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+button {
+  padding: 15px 25px;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.attack {
+  background: #ff9800;
+}
+
+.special {
+  background: #9c27b0;
+  color: white;
+}
+
+.reset {
+  background: #4caf50;
+  color: white;
+}
+
+#message {
+  font-size: 22px;
+  font-weight: bold;
+  margin: 15px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>⚔️ ARENA FIGHTER ⚔️</h1>
+
+<div class="health-box">
+  <div class="health">
+    <div id="health1" class="health-fill"></div>
+  </div>
+
+  <div class="health">
+    <div id="health2" class="health-fill"></div>
+  </div>
+</div>
+
+<div class="arena">
+  <div id="p1" class="player"></div>
+  <div id="p2" class="player"></div>
+</div>
+
+<div id="message">🔥 Fight!</div>
+
+<div class="controls">
+  <button class="attack" onclick="attack()">👊 Attack</button>
+  <button class="special" onclick="specialAttack()">⚡ Special</button>
+  <button class="reset" onclick="resetGame()">🔄 Restart</button>
+</div>
+
+<script>
+let playerHealth = 100;
+let enemyHealth = 100;
+
+function attack() {
+  if (playerHealth <= 0 || enemyHealth <= 0) return;
+
+  let damage = Math.floor(Math.random() * 11) + 10;
+  enemyHealth -= damage;
+
+  if (enemyHealth < 0) enemyHealth = 0;
+
+  updateHealth();
+
+  if (enemyHealth === 0) {
+    document.getElementById("message").innerText =
+      "🏆 YOU WIN!";
+    return;
+  }
+
+  enemyAttack();
+}
+
+function specialAttack() {
+  if (playerHealth <= 0 || enemyHealth <= 0) return;
+
+  let damage = Math.floor(Math.random() * 16) + 15;
+  enemyHealth -= damage;
+
+  if (enemyHealth < 0) enemyHealth = 0;
+
+  updateHealth();
+
+  document.getElementById("message").innerText =
+    "⚡ Special Attack! -" + damage;
+
+  if (enemyHealth === 0) {
+    document.getElementById("message").innerText =
+      "🏆 YOU WIN!";
+    return;
+  }
+
+  enemyAttack();
+}
+
+function enemyAttack() {
+  let damage = Math.floor(Math.random() * 11) + 5;
+  playerHealth -= damage;
+
+  if (playerHealth < 0) playerHealth = 0;
+
+  updateHealth();
+
+  if (playerHealth === 0) {
+    document.getElementById("message").innerText =
+      "💀 YOU LOSE!";
+  }
+}
+
+function updateHealth() {
+  document.getElementById("health1").style.width =
+    playerHealth + "%";
+
+  document.getElementById("health2").style.width =
+    enemyHealth + "%";
+}
+
+function resetGame() {
+  playerHealth = 100;
+  enemyHealth = 100;
+
+  updateHealth();
+
+  document.getElementById("message").innerText =
+    "🔥 Fight!";
+}
+</script>
+
+</body>
+</html>
