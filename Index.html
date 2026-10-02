@@ -8,107 +8,171 @@
 <style>
 * {
   box-sizing: border-box;
+  user-select: none;
 }
 
 body {
   margin: 0;
-  font-family: Arial, sans-serif;
-  background: #111;
+  background: #101018;
   color: white;
+  font-family: Arial, sans-serif;
   text-align: center;
 }
 
 h1 {
-  margin: 15px 0;
+  margin: 12px 0;
+  font-size: 28px;
 }
 
-.arena {
+.health-area {
   width: 95%;
-  max-width: 900px;
-  height: 450px;
+  max-width: 850px;
   margin: auto;
-  background: linear-gradient(#222, #444);
-  border: 4px solid #777;
-  position: relative;
-  overflow: hidden;
-}
-
-.player {
-  position: absolute;
-  bottom: 40px;
-  width: 70px;
-  height: 100px;
-  border-radius: 15px;
-}
-
-#p1 {
-  left: 70px;
-  background: #2196f3;
-}
-
-#p2 {
-  right: 70px;
-  background: #e53935;
-}
-
-.health-box {
-  width: 90%;
-  max-width: 800px;
-  margin: 15px auto;
   display: flex;
-  justify-content: space-between;
-  gap: 20px;
+  gap: 12px;
 }
 
-.health {
+.bar {
+  flex: 1;
   height: 25px;
   background: #333;
   border: 2px solid white;
-  flex: 1;
+  border-radius: 8px;
+  overflow: hidden;
 }
 
-.health-fill {
+.fill {
   height: 100%;
   width: 100%;
-  background: #39d353;
-  transition: width 0.3s;
+  transition: width .25s;
 }
 
-.controls {
-  margin: 20px auto;
-  display: flex;
-  justify-content: center;
-  gap: 15px;
-  flex-wrap: wrap;
+#playerHealth {
+  background: #20d060;
 }
 
-button {
-  padding: 15px 25px;
-  border: none;
-  border-radius: 10px;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
+#enemyHealth {
+  background: #e53935;
 }
 
-.attack {
-  background: #ff9800;
+.arena {
+  position: relative;
+  width: 95%;
+  max-width: 850px;
+  height: 430px;
+  margin: 15px auto;
+  overflow: hidden;
+  border: 4px solid #777;
+  border-radius: 15px;
+  background:
+    linear-gradient(#182848, #4b6cb7);
 }
 
-.special {
-  background: #9c27b0;
-  color: white;
+.ground {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 70px;
+  background: #222;
+  border-top: 5px solid #555;
 }
 
-.reset {
-  background: #4caf50;
-  color: white;
+.fighter {
+  position: absolute;
+  bottom: 70px;
+  width: 55px;
+  height: 95px;
+  border-radius: 15px 15px 8px 8px;
+  transition: left .08s, right .08s;
+}
+
+#player {
+  left: 80px;
+  background: #2196f3;
+}
+
+#enemy {
+  right: 80px;
+  background: #ff3b30;
+}
+
+.fighter::before {
+  content: "";
+  position: absolute;
+  width: 38px;
+  height: 38px;
+  background: #ffd1a4;
+  border-radius: 50%;
+  top: -35px;
+  left: 8px;
+  border: 3px solid #111;
+}
+
+.punch {
+  transform: scaleX(1.2);
+}
+
+.hit {
+  animation: hit .2s;
+}
+
+@keyframes hit {
+  50% {
+    transform: translateX(-8px);
+  }
 }
 
 #message {
-  font-size: 22px;
+  min-height: 30px;
+  font-size: 20px;
   font-weight: bold;
-  margin: 15px;
+}
+
+.controls {
+  width: 95%;
+  max-width: 700px;
+  margin: auto;
+}
+
+button {
+  margin: 5px;
+  padding: 14px 18px;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: bold;
+  color: white;
+}
+
+.move {
+  background: #555;
+}
+
+.attack {
+  background: #ff8c00;
+}
+
+.block {
+  background: #5555dd;
+}
+
+.special {
+  background: #a020f0;
+}
+
+.restart {
+  background: #20a050;
+}
+
+@media (max-width: 500px) {
+  .arena {
+    height: 350px;
+  }
+
+  button {
+    padding: 12px 14px;
+    font-size: 14px;
+  }
 }
 </style>
 </head>
@@ -117,105 +181,236 @@ button {
 
 <h1>⚔️ ARENA FIGHTER ⚔️</h1>
 
-<div class="health-box">
-  <div class="health">
-    <div id="health1" class="health-fill"></div>
+<div class="health-area">
+  <div class="bar">
+    <div id="playerHealth" class="fill"></div>
   </div>
 
-  <div class="health">
-    <div id="health2" class="health-fill"></div>
+  <div class="bar">
+    <div id="enemyHealth" class="fill"></div>
   </div>
 </div>
 
 <div class="arena">
-  <div id="p1" class="player"></div>
-  <div id="p2" class="player"></div>
+
+  <div id="player" class="fighter"></div>
+  <div id="enemy" class="fighter"></div>
+
+  <div class="ground"></div>
+
 </div>
 
-<div id="message">🔥 Fight!</div>
+<div id="message">🔥 FIGHT!</div>
 
 <div class="controls">
-  <button class="attack" onclick="attack()">👊 Attack</button>
-  <button class="special" onclick="specialAttack()">⚡ Special</button>
-  <button class="reset" onclick="resetGame()">🔄 Restart</button>
+
+  <div>
+    <button class="move" onclick="moveLeft()">⬅️ LEFT</button>
+    <button class="move" onclick="moveRight()">RIGHT ➡️</button>
+  </div>
+
+  <div>
+    <button class="attack" onclick="punch()">👊 PUNCH</button>
+    <button class="attack" onclick="kick()">🦵 KICK</button>
+  </div>
+
+  <div>
+    <button class="block" onclick="block()">🛡️ BLOCK</button>
+    <button class="special" onclick="special()">⚡ SPECIAL</button>
+  </div>
+
+  <button class="restart" onclick="restart()">🔄 RESTART</button>
+
 </div>
 
 <script>
-let playerHealth = 100;
-let enemyHealth = 100;
 
-function attack() {
-  if (playerHealth <= 0 || enemyHealth <= 0) return;
+let playerHP = 100;
+let enemyHP = 100;
 
-  let damage = Math.floor(Math.random() * 11) + 10;
-  enemyHealth -= damage;
+let playerX = 80;
+let enemyX = 80;
 
-  if (enemyHealth < 0) enemyHealth = 0;
+let blocking = false;
+let gameOver = false;
 
-  updateHealth();
-
-  if (enemyHealth === 0) {
-    document.getElementById("message").innerText =
-      "🏆 YOU WIN!";
-    return;
-  }
-
-  enemyAttack();
-}
-
-function specialAttack() {
-  if (playerHealth <= 0 || enemyHealth <= 0) return;
-
-  let damage = Math.floor(Math.random() * 16) + 15;
-  enemyHealth -= damage;
-
-  if (enemyHealth < 0) enemyHealth = 0;
-
-  updateHealth();
-
-  document.getElementById("message").innerText =
-    "⚡ Special Attack! -" + damage;
-
-  if (enemyHealth === 0) {
-    document.getElementById("message").innerText =
-      "🏆 YOU WIN!";
-    return;
-  }
-
-  enemyAttack();
-}
-
-function enemyAttack() {
-  let damage = Math.floor(Math.random() * 11) + 5;
-  playerHealth -= damage;
-
-  if (playerHealth < 0) playerHealth = 0;
-
-  updateHealth();
-
-  if (playerHealth === 0) {
-    document.getElementById("message").innerText =
-      "💀 YOU LOSE!";
-  }
-}
+const player = document.getElementById("player");
+const enemy = document.getElementById("enemy");
 
 function updateHealth() {
-  document.getElementById("health1").style.width =
-    playerHealth + "%";
 
-  document.getElementById("health2").style.width =
-    enemyHealth + "%";
+  document.getElementById("playerHealth").style.width =
+    playerHP + "%";
+
+  document.getElementById("enemyHealth").style.width =
+    enemyHP + "%";
 }
 
-function resetGame() {
-  playerHealth = 100;
-  enemyHealth = 100;
+function message(text) {
+  document.getElementById("message").innerText = text;
+}
+
+function moveLeft() {
+
+  if (gameOver) return;
+
+  playerX -= 25;
+
+  if (playerX < 0)
+    playerX = 0;
+
+  player.style.left = playerX + "px";
+}
+
+function moveRight() {
+
+  if (gameOver) return;
+
+  playerX += 25;
+
+  if (playerX > 330)
+    playerX = 330;
+
+  player.style.left = playerX + "px";
+}
+
+function punch() {
+
+  if (gameOver) return;
+
+  enemyHP -= 10;
+
+  if (enemyHP < 0)
+    enemyHP = 0;
+
+  player.classList.add("punch");
+  enemy.classList.add("hit");
+
+  setTimeout(() => {
+    player.classList.remove("punch");
+    enemy.classList.remove("hit");
+  }, 200);
+
+  message("👊 PUNCH! -10");
 
   updateHealth();
 
-  document.getElementById("message").innerText =
-    "🔥 Fight!";
+  enemyTurn();
 }
+
+function kick() {
+
+  if (gameOver) return;
+
+  enemyHP -= 15;
+
+  if (enemyHP < 0)
+    enemyHP = 0;
+
+  enemy.classList.add("hit");
+
+  setTimeout(() => {
+    enemy.classList.remove("hit");
+  }, 200);
+
+  message("🦵 KICK! -15");
+
+  updateHealth();
+
+  enemyTurn();
+}
+
+function block() {
+
+  if (gameOver) return;
+
+  blocking = true;
+
+  message("🛡️ BLOCKING!");
+
+  setTimeout(() => {
+    blocking = false;
+  }, 1000);
+}
+
+function special() {
+
+  if (gameOver) return;
+
+  let damage = Math.floor(Math.random() * 16) + 20;
+
+  enemyHP -= damage;
+
+  if (enemyHP < 0)
+    enemyHP = 0;
+
+  message("⚡ SPECIAL ATTACK! -" + damage);
+
+  updateHealth();
+
+  enemyTurn();
+}
+
+function enemyTurn() {
+
+  if (enemyHP <= 0) {
+
+    gameOver = true;
+    message("🏆 YOU WIN!");
+    return;
+  }
+
+  setTimeout(() => {
+
+    let damage =
+      Math.floor(Math.random() * 11) + 5;
+
+    if (blocking) {
+
+      damage = Math.floor(damage / 2);
+
+      message("🛡️ BLOCKED! -" + damage);
+
+    } else {
+
+      message("💥 Enemy attacks! -" + damage);
+    }
+
+    playerHP -= damage;
+
+    if (playerHP < 0)
+      playerHP = 0;
+
+    updateHealth();
+
+    if (playerHP <= 0) {
+
+      gameOver = true;
+      message("💀 YOU LOSE!");
+    }
+
+  }, 500);
+}
+
+function restart() {
+
+  playerHP = 100;
+  enemyHP = 100;
+
+  playerX = 80;
+
+  blocking = false;
+  gameOver = false;
+
+  player.style.left = playerX + "px";
+
+  updateHealth();
+
+  message("🔥 FIGHT!");
+}
+
+updateHealth();
+
 </script>
 
 </body>
